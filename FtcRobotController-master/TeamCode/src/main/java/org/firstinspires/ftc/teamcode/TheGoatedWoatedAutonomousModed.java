@@ -32,7 +32,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -49,20 +48,6 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
-
-/**
- * This file contains an example of an iterative (Non-Linear) "OpMode".
- * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
- * The names of OpModes appear on the menu of the FTC Driver Station.
- * When a selection is made from the menu, the corresponding OpMode
- * class is instantiated on the Robot Controller and executed.
- *
- * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
- * It includes all the skeletal structure that all iterative OpModes contain.
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
- */
 
 @TeleOp(name="TheGoatedWoatedAutonomousModed", group="Iterative Autonomous")
 //@Disabled
@@ -81,19 +66,15 @@ public class TheGoatedWoatedAutonomousModed extends OpMode
 
     int colorIAmSeeing = 0;
 
-    double ractualAvg;
-    double gactualAvg;
-    double bactualAvg;
+    double actualAvg1;
+    double actualAvg2;
+    double actualAvg3;
 
     /*
      * Code to run ONCE when the driver hits INIT
      */
     @Override
     public void init() {
-
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
         LeftFront = hardwareMap.dcMotor.get("LeftFront");
         LeftBack = hardwareMap.dcMotor.get("LeftBack");
         RightFront = hardwareMap.dcMotor.get("RightFront");
@@ -121,15 +102,10 @@ public class TheGoatedWoatedAutonomousModed extends OpMode
         });
 
 
-        // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
-        // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
-        // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        // Reverse the right side motors
-        // Reverse left motors if you are using NeveRests
         RightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         RightBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        // Tell the driver that initialization is complete.
+
         telemetry.addData("Status", "Initialized");
     }
 
@@ -139,19 +115,20 @@ public class TheGoatedWoatedAutonomousModed extends OpMode
     @Override
     public void init_loop() {
 
-        telemetry.addData("R", ractualAvg);
-        telemetry.addData("Y", gactualAvg);
-        telemetry.addData("B", bactualAvg);
+        telemetry.addData("G", actualAvg1);
+        telemetry.addData("Y", actualAvg2);
+        telemetry.addData("B", actualAvg3);
 
-        if (ractualAvg > 15 || gactualAvg > 15 || bactualAvg > 15){
-            if (ractualAvg > gactualAvg && ractualAvg > bactualAvg){
+
+        if (actualAvg1 > 15 || actualAvg2 > 15 || actualAvg3 > 15){
+            if (actualAvg1 > actualAvg2 && actualAvg1 > actualAvg3){
                 colorIAmSeeing = 1;
             }
-            else if (gactualAvg > ractualAvg && gactualAvg > bactualAvg)
+            else if (actualAvg2 > actualAvg1 && actualAvg2 > actualAvg3)
             {
                 colorIAmSeeing = 2;
             }
-            else if (bactualAvg > ractualAvg && bactualAvg > gactualAvg){
+            else if (actualAvg3 > actualAvg1 && actualAvg3 > actualAvg2){
                 colorIAmSeeing = 3;
             }
             else{
@@ -180,9 +157,8 @@ public class TheGoatedWoatedAutonomousModed extends OpMode
      */
     @Override
     public void start() {
+
         runtime.reset();
-
-
 
     }
 
@@ -191,22 +167,30 @@ public class TheGoatedWoatedAutonomousModed extends OpMode
      */
     @Override
     public void loop() {
+        //Main loop
 
         if (colorIAmSeeing == 1){
-            double power = 0.7;
-            LeftFront.setPower(power);
-            LeftBack.setPower(-power);
-            RightFront.setPower(-power);
-            RightBack.setPower(power);
-            if (runtime.milliseconds() <= 300.0){
-                LeftFront.setPower(0);
-                LeftBack.setPower(0);
-                RightFront.setPower(0);
-                RightBack.setPower(0);
-            }
+            //Strafe left and forward
+
+
+
         }
+        else if (colorIAmSeeing == 2){
+            //Strafe right and forward
+
+
+
+        }
+        else if (colorIAmSeeing == 3){
+            //Go forward
+
+
+
+        }
+
+
         telemetry.update();
-        //Main loop
+
     }
 
     /*
@@ -222,74 +206,54 @@ public class TheGoatedWoatedAutonomousModed extends OpMode
     public class examplePipeline extends OpenCvPipeline{
 
         public Mat processFrame(Mat input) {
-            // "Mat" stands for matrix, which is basically the image that the detector will process
-            // the input matrix is the image coming from the camera
-            // the function will return a matrix to be drawn on your phone's screen
-
-            // The detector detects regular stones. The camera fits two stones.
-            // If it finds one regular stone then the other must be the skystone.
-            // If both are regular stones, it returns NONE to tell the robot to keep looking
-
             // Make a working copy of the input matrix in HSV
             Mat mat = new Mat();
             Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
 
-            // We create a HSV range for yellow to detect regular stones
+
+
+
             // NOTE: In OpenCV's implementation,
             // Hue values are half the real value
-
-
-            //RED SECTION//
-
-            Scalar rlowHSV = new Scalar(60, 100, 100); // lower bound HSV for green
-            Scalar rhighHSV = new Scalar(71, 255, 255); // higher bound HSV for green
+            Scalar lowHSV1 = new Scalar(60, 100, 100);
+            Scalar highHSV1 = new Scalar(71, 255, 255);
             Mat thresh = new Mat();
 
-            // We'll get a black and white image. The white regions represent the regular stones.
-            // inRange(): thresh[i][j] = {255,255,255} if mat[i][i] is within the range
-            Core.inRange(mat, rlowHSV, rhighHSV, thresh);
-
-            Scalar ravg = Core.mean(thresh);
-
-            ractualAvg = ravg.val[0];
-
-            //telemetry.addData("Avg Red Present : ", ractualAvg);
 
 
-            //YELLOW SECTION//
+            Core.inRange(mat, lowHSV1, highHSV1, thresh);
 
-            Scalar glowHSV = new Scalar(20, 100, 100); // lower bound HSV for yellow
-            Scalar ghighHSV = new Scalar(40, 255, 255); // higher bound HSV for yellow
+            Scalar avg1 = Core.mean(thresh);
+
+            actualAvg1 = avg1.val[0];
+
+
+
+
+            Scalar lowHSV2 = new Scalar(20, 100, 100);
+            Scalar highHSV2 = new Scalar(40, 255, 255);
             thresh = new Mat();
 
-            // We'll get a black and white image. The white regions represent the regular stones.
-            // inRange(): thresh[i][j] = {255,255,255} if mat[i][i] is within the range
-            Core.inRange(mat, glowHSV,ghighHSV, thresh);
-
-            Scalar gavg = Core.mean(thresh);
-
-            gactualAvg = gavg.val[0];
-
-            //telemetry.addData("Avg Green Present : ", gactualAvg);
 
 
-            //BLUE SECTION//
+            Core.inRange(mat, lowHSV2, highHSV2, thresh);
 
-            Scalar blowHSV = new Scalar(96, 100, 100); // lower bound HSV for yellow
-            Scalar bhighHSV = new Scalar(121, 255, 255); // higher bound HSV for yellow
+            Scalar avg2 = Core.mean(thresh);
+
+            actualAvg2 = avg2.val[0];
+
+
+
+            Scalar lowHSV3 = new Scalar(96, 100, 100);
+            Scalar highHSV3 = new Scalar(121, 255, 255);
             thresh = new Mat();
 
-            // We'll get a black and white image. The white regions represent the regular stones.
-            // inRange(): thresh[i][j] = {255,255,255} if mat[i][i] is within the range
-            Core.inRange(mat, blowHSV, bhighHSV, thresh);
 
-            Scalar bavg = Core.mean(thresh);
+            Core.inRange(mat, lowHSV3, highHSV3, thresh);
 
-            bactualAvg = bavg.val[0];
+            Scalar avg3 = Core.mean(thresh);
 
-            //telemetry.addData("Avg Blue Present : ", bactualAvg);
-
-
+            actualAvg3 = avg3.val[0];
 
 
             return thresh;

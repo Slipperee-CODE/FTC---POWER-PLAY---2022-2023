@@ -85,7 +85,7 @@ public class TheGoatedWoatedOpMoaded extends OpMode
 
         SpeedReduction = SpeedReduction/100;
 
-
+        int slideMotorPower = 0.6;
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -121,7 +121,7 @@ public class TheGoatedWoatedOpMoaded extends OpMode
     @Override
     public void loop() {
         double y = -gamepad1.left_stick_y; // Remember, this is reversed!
-        double x = gamepad1.left_stick_x * 1; // Counteract imperfect strafing
+        double x = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
 
 
@@ -145,10 +145,10 @@ public class TheGoatedWoatedOpMoaded extends OpMode
 
 
         if (gamepad2.dpad_up){
-            spoolMotor.setPower(-0.6);
+            spoolMotor.setPower(-slideMotorPower);
         }
         else if (gamepad2.dpad_down) {
-            spoolMotor.setPower(0.6);
+            spoolMotor.setPower(slideMotorPower);
         }
         else if (!gamepad2.dpad_up && !gamepad2.dpad_down)
         {
